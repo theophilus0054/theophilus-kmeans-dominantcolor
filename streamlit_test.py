@@ -1,4 +1,5 @@
 import streamlit as st
+import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.cluster import KMeans
 from PIL import Image
@@ -56,23 +57,27 @@ if my_upload is not None:
         img_array = np.float32(convert_image_to_array(image)) / 255.0
         flat_img = img_array.reshape(-1, 3)
 
-        # Sidebar slider untuk memilih jumlah cluster
-        n_clusters = st.sidebar.slider("Number of Clusters", 1, 10, 5)
+        # Jumlah cluster = 8 (default)
+        n_clusters = 8
 
         with st.spinner("Clustering..."):
             km = KMeans(n_clusters=n_clusters, random_state=42)
             km.fit(flat_img)
             colors = (km.cluster_centers_ * 255).astype(np.uint8)
 
-        # Visualisasi warna dominan
-        color_boxes = colors.reshape(1, n_clusters, 3)
-        st.subheader("Dominant Colors")
-        st.image(color_boxes, width=300)
+        # Ambil hanya 5 warna dominan teratas
+        top_colors = colors[:5]  # atau gunakan slicing berdasarkan kebutuhan
 
-        # Tampilkan RGB value
-        st.write("RGB Values of Cluster Centers:")
-        for idx, color in enumerate(colors):
-            st.write(f"Cluster {idx+1}: R={color[0]}, G={color[1]}, B={color[2]}")
+        st.subheader("Dominant Colors (Top 5)")
+
+        # Tampilkan masing-masing warna dalam kotak terpisah
+        color_cols = st.columns(5)
+        for idx, (col, color) in enumerate(zip(color_cols, top_colors)):
+            img = np.zeros((100, 100, 3), dtype=np.uint8)
+            img[:, :] = color  # Isi dengan warna dominan
+
+            col.image(img, caption=f"Cluster {idx+1}", use_column_width=True)
+            col.markdown(f"<p style='text-align:center;'>RGB: {tuple(color)}</p>", unsafe_allow_html=True)
 
     except Exception as e:
         st.error("Error processing image:")
