@@ -47,7 +47,7 @@ if my_upload is not None:
     try:
         image = Image.open(my_upload)
         image = image.convert("RGB")  # pastikan dalam RGB
-        st.image(image, caption="Uploaded Image", use_column_width=True)
+        st.image(image, caption="Uploaded Image", use_container_width=True)
 
         if image.width > MAX_IMAGE_SIZE or image.height > MAX_IMAGE_SIZE:
             image.thumbnail((MAX_IMAGE_SIZE, MAX_IMAGE_SIZE))
@@ -76,7 +76,7 @@ if my_upload is not None:
             img = np.zeros((100, 100, 3), dtype=np.uint8)
             img[:, :] = color  # Isi dengan warna dominan
 
-            col.image(img, caption=f"Cluster {idx+1}", use_column_width=True)
+            col.image(img, caption=f"Cluster {idx+1}", use_container_width=True)
             col.markdown(f"<p style='text-align:center;'>RGB: {tuple(color)}</p>", unsafe_allow_html=True)
 
     except Exception as e:
